@@ -98,3 +98,21 @@ export async function extractStoryBible(
   )
   return response.data
 }
+
+// ── 剧本生成相关 ──
+
+export interface GenerateScriptResponse {
+  project_id: string
+  yaml_content: string
+  scene_count: number
+}
+
+/** 生成剧本 YAML */
+export async function generateScript(
+  projectId: string
+): Promise<GenerateScriptResponse> {
+  const response = await extractApi.post<GenerateScriptResponse>(
+    `/projects/${projectId}/generate`
+  )
+  return response.data
+}

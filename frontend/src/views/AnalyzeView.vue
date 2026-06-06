@@ -6,7 +6,7 @@
         返回首页
       </el-button>
       <h1>小说章节解析</h1>
-      <p class="subtitle">输入小说文本，自动识别章节并抽取 Story Bible</p>
+      <p class="subtitle">输入小说文本，自动识别章节 → 抽取 Story Bible → 生成剧本 YAML</p>
     </div>
 
     <div class="analyze-main">
@@ -15,12 +15,12 @@
       <ChapterList />
 
       <!-- Step 2: Extract Story Bible -->
-      <div v-if="store.projectId && store.chapters.length > 0" class="extract-section">
+      <div v-if="store.projectId && store.chapters.length > 0" class="step-section">
         <el-card>
-          <div class="extract-area">
-            <div class="extract-info">
-              <span class="extract-label">Step 2: Story Bible 抽取</span>
-              <span class="extract-hint">
+          <div class="step-area">
+            <div class="step-info">
+              <span class="step-label">Step 2: Story Bible 抽取</span>
+              <span class="step-hint">
                 从 {{ store.chapterCount }} 个章节中抽取人物、地点、关键事件和人物关系
               </span>
             </div>
@@ -30,11 +30,10 @@
               :disabled="store.extracting"
               @click="handleExtract"
             >
-              {{ store.extracting ? 'AI 正在分析...' : '抽取 Story Bible' }}
+              {{ store.extracting ? 'AI 正在分析...' : store.storyBible ? '✓ 已抽取' : '抽取 Story Bible' }}
             </el-button>
           </div>
         </el-card>
-
         <el-alert
           v-if="extractError"
           :title="extractError"
@@ -48,6 +47,41 @@
 
       <!-- Step 2 Results: Story Bible -->
       <CharacterCards />
+
+      <!-- Step 3: Generate Script YAML -->
+      <div v-if="store.storyBible" class="step-section">
+        <el-card>
+          <div class="step-area">
+            <div class="step-info">
+              <span class="step-label">Step 3: 生成剧本 YAML</span>
+              <span class="step-hint">
+                基于 {{ store.chapterCount }} 个章节和
+                {{ store.storyBible.characters.length }} 个人物的 Story Bible 生成结构化剧本
+              </span>
+            </div>
+            <el-button
+              type="success"
+              :loading="store.generating"
+              :disabled="store.generating"
+              @click="handleGenerate"
+            >
+              {{ store.generating ? 'AI 正在生成...' : store.yamlContent ? '✓ 已生成' : '生成剧本 YAML' }}
+            </el-button>
+          </div>
+        </el-card>
+        <el-alert
+          v-if="generateError"
+          :title="generateError"
+          type="error"
+          show-icon
+          closable
+          class="error-alert"
+          @close="generateError = ''"
+        />
+      </div>
+
+      <!-- Step 3 Results: YAML Viewer -->
+      <YamlViewer :yaml-content="store.yamlContent" />
     </div>
   </div>
 </template>
@@ -59,20 +93,23 @@ import { ElMessage } from 'element-plus'
 import NovelInput from '@/components/NovelInput.vue'
 import ChapterList from '@/components/ChapterList.vue'
 import CharacterCards from '@/components/CharacterCards.vue'
+import YamlViewer from '@/components/YamlViewer.vue'
 import { useProjectStore } from '@/stores/projectStore'
-import { extractStoryBible } from '@/api/project'
+import { extractStoryBible, generateScript } from '@/api/project'
 
 const store = useProjectStore()
 const extractError = ref('')
+const generateError = ref('')
 
 function onParseDone() {
-  // Reset extraction state when new parse happens
   store.setStoryBible(null as any)
+  store.setYamlContent('')
   extractError.value = ''
+  generateError.value = ''
 }
 
 async function handleExtract() {
-  if (!store.projectId) return
+  if (!store.projectId || store.extracting) return
 
   store.setExtracting(true)
   extractError.value = ''
@@ -94,6 +131,31 @@ async function handleExtract() {
     }
   } finally {
     store.setExtracting(false)
+  }
+}
+
+async function handleGenerate() {
+  if (!store.projectId || store.generating) return
+
+  store.setGenerating(true)
+  generateError.value = ''
+
+  try {
+    const result = await generateScript(store.projectId)
+    store.setYamlContent(result.yaml_content)
+    store.setSceneCount(result.scene_count)
+    ElMessage.success(
+      `剧本生成完成：共 ${result.scene_count} 个场景`
+    )
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'response' in err) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } }
+      generateError.value = axiosErr.response?.data?.detail || '生成失败'
+    } else {
+      generateError.value = '网络错误，请检查后端服务是否启动'
+    }
+  } finally {
+    store.setGenerating(false)
   }
 }
 </script>
@@ -130,29 +192,29 @@ async function handleExtract() {
   padding: 0 20px 60px;
 }
 
-.extract-section {
+.step-section {
   margin-top: 24px;
 }
 
-.extract-area {
+.step-area {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
 }
 
-.extract-info {
+.step-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.extract-label {
+.step-label {
   font-weight: 600;
   color: #303133;
 }
 
-.extract-hint {
+.step-hint {
   font-size: 0.85rem;
   color: #909399;
 }

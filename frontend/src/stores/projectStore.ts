@@ -16,6 +16,11 @@ export const useProjectStore = defineStore('project', () => {
   const extracting = ref(false)
   const storyBible = ref<StoryBibleData | null>(null)
 
+  // Script generation
+  const generating = ref(false)
+  const yamlContent = ref<string>('')
+  const sceneCount = ref<number>(0)
+
   function setProject(data: {
     project_id: string
     title: string
@@ -59,6 +64,18 @@ export const useProjectStore = defineStore('project', () => {
     extracting.value = val
   }
 
+  function setYamlContent(content: string) {
+    yamlContent.value = content
+  }
+
+  function setSceneCount(count: number) {
+    sceneCount.value = count
+  }
+
+  function setGenerating(val: boolean) {
+    generating.value = val
+  }
+
   function reset() {
     projectId.value = ''
     title.value = ''
@@ -70,6 +87,9 @@ export const useProjectStore = defineStore('project', () => {
     error.value = ''
     storyBible.value = null
     extracting.value = false
+    yamlContent.value = ''
+    sceneCount.value = 0
+    generating.value = false
   }
 
   return {
@@ -83,6 +103,9 @@ export const useProjectStore = defineStore('project', () => {
     error,
     storyBible,
     extracting,
+    yamlContent,
+    sceneCount,
+    generating,
     setProject,
     setChapters,
     setNovelText,
@@ -90,6 +113,9 @@ export const useProjectStore = defineStore('project', () => {
     setError,
     setStoryBible,
     setExtracting,
+    setYamlContent,
+    setSceneCount,
+    setGenerating,
     reset,
   }
 })

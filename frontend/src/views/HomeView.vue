@@ -35,8 +35,8 @@
         </template>
         <el-steps direction="vertical">
           <el-step title="小说输入与章节解析 ✅" description="粘贴文本或上传 .txt 文件，自动识别章节" status="success" />
-          <el-step title="Story Bible 抽取" description="抽取人物、地点、事件" />
-          <el-step title="剧本 YAML 生成" description="结构化剧本生成" />
+          <el-step title="Story Bible 抽取 ✅" description="人物、地点、事件、关系抽取" status="success" />
+          <el-step title="剧本 YAML 生成 ✅" description="结构化剧本生成与预览" status="success" />
           <el-step title="Schema 校验" description="格式与内容校验" />
           <el-step title="剧本预览与导出" description="结构化预览与 YAML 导出" />
         </el-steps>

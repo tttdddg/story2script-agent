@@ -14,6 +14,11 @@ const router = createRouter({
       name: 'analyze',
       component: () => import('@/views/AnalyzeView.vue'),
     },
+    {
+      path: '/script',
+      name: 'script',
+      component: () => import('@/views/ScriptView.vue'),
+    },
   ],
 })
 

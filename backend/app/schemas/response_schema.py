@@ -72,3 +72,10 @@ class ExtractStoryBibleResponse(BaseModel):
     """Story Bible 抽取响应"""
     project_id: str = Field(..., description="项目 ID")
     story_bible: StoryBibleData = Field(..., description="Story Bible 数据")
+
+
+class GenerateScriptResponse(BaseModel):
+    """剧本生成响应"""
+    project_id: str = Field(..., description="项目 ID")
+    yaml_content: str = Field(..., description="生成的 YAML 剧本文本")
+    scene_count: int = Field(..., description="场景数量")
