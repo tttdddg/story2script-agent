@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes_project import router as project_router
 from app.api.routes_generate import router as generate_router
 from app.api.routes_validate import router as validate_router
+from app.api.routes_export import router as export_router
 
 app = FastAPI(
     title="Story2Script Agent",
@@ -22,6 +23,7 @@ app.add_middleware(
 app.include_router(project_router)
 app.include_router(generate_router)
 app.include_router(validate_router)
+app.include_router(export_router)
 
 
 @app.get("/api/health")

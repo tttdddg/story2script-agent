@@ -81,7 +81,10 @@
       </div>
 
       <!-- Step 3 Results: YAML Viewer -->
-      <YamlViewer :yaml-content="store.yamlContent" />
+      <YamlViewer
+        :yaml-content="store.yamlContent"
+        :project-id="store.projectId"
+      />
 
       <!-- Step 4: Validate YAML -->
       <div v-if="store.yamlContent" class="step-section">
@@ -113,13 +116,31 @@
         :repair-success="store.repairSuccess"
         @repair="handleRepair"
       />
+
+      <!-- Step 5: Export -->
+      <div v-if="store.yamlContent" class="step-section export-section">
+        <el-card>
+          <div class="export-area">
+            <div class="export-info">
+              <span class="export-title">🎬 导出剧本</span>
+              <span class="export-hint">下载 YAML 文件，可用于导入其他工具或存档</span>
+            </div>
+            <div class="export-actions">
+              <el-button type="success" size="large" @click="handleExport">
+                <el-icon style="margin-right: 6px"><Download /></el-icon>
+                导出 YAML 文件
+              </el-button>
+            </div>
+          </div>
+        </el-card>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ArrowLeft } from '@element-plus/icons-vue'
+import { ArrowLeft, Download } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import NovelInput from '@/components/NovelInput.vue'
 import ChapterList from '@/components/ChapterList.vue'
@@ -127,7 +148,7 @@ import CharacterCards from '@/components/CharacterCards.vue'
 import YamlViewer from '@/components/YamlViewer.vue'
 import ValidationPanel from '@/components/ValidationPanel.vue'
 import { useProjectStore } from '@/stores/projectStore'
-import { extractStoryBible, generateScript, validateYaml, repairYaml } from '@/api/project'
+import { extractStoryBible, generateScript, validateYaml, repairYaml, downloadYaml } from '@/api/project'
 
 const store = useProjectStore()
 const extractError = ref('')
@@ -261,6 +282,17 @@ async function handleRepair() {
     store.setRepairing(false)
   }
 }
+
+async function handleExport() {
+  if (!store.projectId) return
+  try {
+    await downloadYaml(store.projectId)
+    ElMessage.success('YAML 文件导出成功')
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : '导出失败'
+    ElMessage.error(msg)
+  }
+}
 </script>
 
 <style scoped>
@@ -324,5 +356,37 @@ async function handleRepair() {
 
 .error-alert {
   margin-top: 12px;
+}
+
+.export-section {
+  margin-top: 24px;
+}
+
+.export-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.export-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.export-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #303133;
+}
+
+.export-hint {
+  font-size: 0.85rem;
+  color: #909399;
+}
+
+.export-actions {
+  flex-shrink: 0;
 }
 </style>

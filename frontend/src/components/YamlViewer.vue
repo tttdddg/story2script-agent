@@ -25,9 +25,9 @@
               <el-icon style="margin-right: 4px"><CopyDocument /></el-icon>
               复制
             </el-button>
-            <el-button size="small" @click="downloadYaml">
+            <el-button size="small" @click="handleDownload">
               <el-icon style="margin-right: 4px"><Download /></el-icon>
-              下载
+              下载 YAML
             </el-button>
           </div>
         </div>
@@ -54,6 +54,7 @@ import ScenePreview from './ScenePreview.vue'
 
 const props = defineProps<{
   yamlContent: string
+  projectId?: string
 }>()
 
 const viewMode = ref<'source' | 'preview'>('preview')
@@ -67,12 +68,24 @@ async function copyYaml() {
   }
 }
 
-function downloadYaml() {
+async function handleDownload() {
+  if (props.projectId) {
+    // 使用后端导出（含正确文件名）
+    try {
+      const { downloadYaml } = await import('@/api/project')
+      await downloadYaml(props.projectId)
+      ElMessage.success('YAML 文件下载已开始')
+      return
+    } catch (e: unknown) {
+      console.warn('后端导出失败，使用前端下载:', e)
+    }
+  }
+  // 回退：前端直接下载
   const blob = new Blob([props.yamlContent], { type: 'text/yaml;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `script_${Date.now()}.yaml`
+  a.download = `story2script_output_${Date.now()}.yaml`
   a.click()
   URL.revokeObjectURL(url)
   ElMessage.success('下载已开始')

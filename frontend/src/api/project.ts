@@ -163,3 +163,39 @@ export async function repairYaml(
   )
   return response.data
 }
+
+// ── 导出相关 ──
+
+/** 获取导出 YAML 文件的下载 URL */
+export function getExportUrl(projectId: string): string {
+  return `/api/projects/${projectId}/export`
+}
+
+/** 通过后端导出并下载 YAML 文件 */
+export async function downloadYaml(projectId: string): Promise<void> {
+  const response = await fetch(getExportUrl(projectId))
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ detail: '导出失败' }))
+    throw new Error(err.detail || '导出失败')
+  }
+
+  // 从 Content-Disposition 头提取文件名
+  const disposition = response.headers.get('Content-Disposition')
+  let filename = 'story2script_output.yaml'
+  if (disposition) {
+    const match = disposition.match(/filename="?([^"]+)"?/)
+    if (match) {
+      filename = match[1]
+    }
+  }
+
+  const blob = await response.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
