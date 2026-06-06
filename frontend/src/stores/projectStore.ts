@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { ChapterInfo } from '@/api/project'
+import type { ChapterInfo, StoryBibleData } from '@/api/project'
 
 export const useProjectStore = defineStore('project', () => {
   const projectId = ref<string>('')
@@ -11,6 +11,10 @@ export const useProjectStore = defineStore('project', () => {
   const chapters = ref<ChapterInfo[]>([])
   const loading = ref(false)
   const error = ref<string>('')
+
+  // Story Bible
+  const extracting = ref(false)
+  const storyBible = ref<StoryBibleData | null>(null)
 
   function setProject(data: {
     project_id: string
@@ -47,6 +51,14 @@ export const useProjectStore = defineStore('project', () => {
     error.value = msg
   }
 
+  function setStoryBible(data: StoryBibleData) {
+    storyBible.value = data
+  }
+
+  function setExtracting(val: boolean) {
+    extracting.value = val
+  }
+
   function reset() {
     projectId.value = ''
     title.value = ''
@@ -56,6 +68,8 @@ export const useProjectStore = defineStore('project', () => {
     chapters.value = []
     loading.value = false
     error.value = ''
+    storyBible.value = null
+    extracting.value = false
   }
 
   return {
@@ -67,11 +81,15 @@ export const useProjectStore = defineStore('project', () => {
     chapters,
     loading,
     error,
+    storyBible,
+    extracting,
     setProject,
     setChapters,
     setNovelText,
     setLoading,
     setError,
+    setStoryBible,
+    setExtracting,
     reset,
   }
 })

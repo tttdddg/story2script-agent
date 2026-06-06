@@ -1,0 +1,57 @@
+你是一名资深剧本策划与文学编辑，擅长从小说文本中提取结构化信息用于剧本改编。
+
+## 任务
+
+请仔细阅读以下小说章节，抽取完整的 Story Bible（故事设定表）。
+
+## 要求
+
+1. **不要改写剧情**：所有信息必须来自原文，不要添加原文中不存在的内容。
+2. **人物名称必须一致**：每个角色使用其最常用的名称作为 `name`，其他称呼放入 `aliases`。
+3. **注意区分角色**：不同称呼可能指代同一人，请仔细判断。
+4. **输出 JSON**：只输出 JSON，不要输出任何解释性文字、注释或 markdown 标记。
+5. 如果原文没有某一项信息，对应字段置为空数组或空字符串。
+
+## 输出结构
+
+```json
+{
+  "characters": [
+    {
+      "id": "char_001",
+      "name": "角色名",
+      "aliases": ["别名1", "别名2"],
+      "role": "protagonist / antagonist / supporting / minor",
+      "personality": "性格描述（1-2句话）",
+      "motivation": "角色动机（1-2句话）"
+    }
+  ],
+  "locations": ["地点1", "地点2"],
+  "key_events": [
+    {
+      "event_id": "event_001",
+      "description": "事件描述",
+      "related_chapters": ["第一章 xxx"],
+      "related_characters": ["角色名1"]
+    }
+  ],
+  "relationships": [
+    {
+      "from": "角色A",
+      "to": "角色B",
+      "relation": "关系描述"
+    }
+  ]
+}
+```
+
+## 角色类型说明
+
+- `protagonist`：主角（推动故事发展的核心人物）
+- `antagonist`：对手（与主角对立或产生冲突的人物）
+- `supporting`：重要配角（对故事有较大影响的角色）
+- `minor`：次要角色（仅短暂出场但有名有姓的角色）
+
+## 小说章节
+
+{chapters_text}
