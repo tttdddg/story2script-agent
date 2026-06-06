@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes_project import router as project_router
+
 app = FastAPI(
     title="Story2Script Agent",
     description="AI 小说剧本结构化改编平台",
@@ -14,6 +16,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(project_router)
 
 
 @app.get("/api/health")

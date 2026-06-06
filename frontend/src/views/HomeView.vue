@@ -7,6 +7,14 @@
         输入 3 个章节以上的小说文本，自动完成章节解析、人物信息抽取、
         场景拆分、结构化剧本生成与校验，帮助创作者快速获得可编辑的剧本初稿。
       </p>
+      <el-button
+        type="primary"
+        size="large"
+        style="margin-top: 24px"
+        @click="$router.push('/analyze')"
+      >
+        开始使用
+      </el-button>
     </header>
 
     <main class="home-main">
@@ -23,11 +31,10 @@
 
       <el-card class="feature-card">
         <template #header>
-          <span>功能模块（即将上线）</span>
+          <span>功能模块</span>
         </template>
         <el-steps direction="vertical">
-          <el-step title="小说输入" description="粘贴文本或上传 .txt 文件" />
-          <el-step title="章节解析" description="自动识别章节并拆分" />
+          <el-step title="小说输入与章节解析 ✅" description="粘贴文本或上传 .txt 文件，自动识别章节" status="success" />
           <el-step title="Story Bible 抽取" description="抽取人物、地点、事件" />
           <el-step title="剧本 YAML 生成" description="结构化剧本生成" />
           <el-step title="Schema 校验" description="格式与内容校验" />
