@@ -110,3 +110,36 @@ class RepairResponse(BaseModel):
     repair_notes: list[str] = Field(default_factory=list, description="修复记录")
     remaining_errors: list[ValidationError] = Field(default_factory=list, description="剩余错误")
     remaining_warnings: list[ValidationError] = Field(default_factory=list, description="剩余警告")
+
+
+# ── 质量报告相关 ──
+
+class CharacterAppearance(BaseModel):
+    """人物出场统计"""
+    name: str = Field(..., description="人物名称")
+    count: int = Field(..., description="出场次数")
+
+
+class SceneDialogueStat(BaseModel):
+    """场景对白统计"""
+    scene_id: str = Field(..., description="场景 ID")
+    dialogue_count: int = Field(..., description="对白数量")
+
+
+class QualityReport(BaseModel):
+    """剧本质量报告"""
+    chapter_count: int = Field(0, description="原文章节数")
+    scene_count: int = Field(0, description="场景总数")
+    character_count: int = Field(0, description="人物总数")
+    dialogue_count: int = Field(0, description="对白总数")
+    action_count: int = Field(0, description="动作描写总数")
+    conflict_scene_count: int = Field(0, description="包含冲突的场景数")
+    character_appearances: list[CharacterAppearance] = Field(default_factory=list, description="人物出场次数")
+    scene_dialogue_stats: list[SceneDialogueStat] = Field(default_factory=list, description="每场景对白数")
+    suggestions: list[str] = Field(default_factory=list, description="优化建议")
+
+
+class ReportResponse(BaseModel):
+    """质量报告 API 响应"""
+    project_id: str = Field(..., description="项目 ID")
+    report: QualityReport = Field(..., description="质量报告")

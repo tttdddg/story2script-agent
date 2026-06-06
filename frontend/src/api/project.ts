@@ -171,6 +171,45 @@ export function getExportUrl(projectId: string): string {
   return `/api/projects/${projectId}/export`
 }
 
+// ── 质量报告相关 ──
+
+export interface CharacterAppearance {
+  name: string
+  count: number
+}
+
+export interface SceneDialogueStat {
+  scene_id: string
+  dialogue_count: number
+}
+
+export interface QualityReport {
+  chapter_count: number
+  scene_count: number
+  character_count: number
+  dialogue_count: number
+  action_count: number
+  conflict_scene_count: number
+  character_appearances: CharacterAppearance[]
+  scene_dialogue_stats: SceneDialogueStat[]
+  suggestions: string[]
+}
+
+export interface ReportResponse {
+  project_id: string
+  report: QualityReport
+}
+
+/** 获取剧本质量报告 */
+export async function getReport(
+  projectId: string
+): Promise<ReportResponse> {
+  const response = await api.get<ReportResponse>(
+    `/projects/${projectId}/report`
+  )
+  return response.data
+}
+
 /** 通过后端导出并下载 YAML 文件 */
 export async function downloadYaml(projectId: string): Promise<void> {
   const response = await fetch(getExportUrl(projectId))

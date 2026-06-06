@@ -134,6 +134,31 @@
           </div>
         </el-card>
       </div>
+
+      <!-- Step 6: Quality Report -->
+      <div v-if="store.yamlContent" class="step-section">
+        <el-card>
+          <div class="step-area">
+            <div class="step-info">
+              <span class="step-label">Step 6: 剧本质量报告</span>
+              <span class="step-hint">
+                统计关键指标并生成优化建议（不依赖大模型）
+              </span>
+            </div>
+            <el-button
+              type="warning"
+              :loading="store.reporting"
+              :disabled="store.reporting"
+              @click="handleReport"
+            >
+              {{ store.reporting ? '正在生成...' : store.reportData ? '✓ 已生成' : '生成质量报告' }}
+            </el-button>
+          </div>
+        </el-card>
+      </div>
+
+      <!-- Step 6 Results: Quality Report -->
+      <QualityReport :report="store.reportData" />
     </div>
   </div>
 </template>
@@ -147,8 +172,9 @@ import ChapterList from '@/components/ChapterList.vue'
 import CharacterCards from '@/components/CharacterCards.vue'
 import YamlViewer from '@/components/YamlViewer.vue'
 import ValidationPanel from '@/components/ValidationPanel.vue'
+import QualityReport from '@/components/QualityReport.vue'
 import { useProjectStore } from '@/stores/projectStore'
-import { extractStoryBible, generateScript, validateYaml, repairYaml, downloadYaml } from '@/api/project'
+import { extractStoryBible, generateScript, validateYaml, repairYaml, downloadYaml, getReport } from '@/api/project'
 
 const store = useProjectStore()
 const extractError = ref('')
@@ -158,6 +184,7 @@ function onParseDone() {
   store.setStoryBible(null as any)
   store.setYamlContent('')
   store.setValidationResult(null)
+  store.setReportData(null)
   extractError.value = ''
   generateError.value = ''
 }
@@ -291,6 +318,31 @@ async function handleExport() {
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : '导出失败'
     ElMessage.error(msg)
+  }
+}
+
+async function handleReport() {
+  if (!store.projectId || store.reporting) return
+
+  store.setReporting(true)
+
+  try {
+    const result = await getReport(store.projectId)
+    store.setReportData(result.report)
+    ElMessage.success(
+      `报告生成完成：${result.report.scene_count} 场景，` +
+      `${result.report.character_count} 人物，` +
+      `${result.report.suggestions.length} 条建议`
+    )
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'response' in err) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } }
+      ElMessage.error(axiosErr.response?.data?.detail || '报告生成失败')
+    } else {
+      ElMessage.error('网络错误，请检查后端服务是否启动')
+    }
+  } finally {
+    store.setReporting(false)
   }
 }
 </script>
