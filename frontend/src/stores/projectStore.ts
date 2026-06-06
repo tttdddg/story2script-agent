@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { ChapterInfo, StoryBibleData } from '@/api/project'
+import type { ChapterInfo, StoryBibleData, ValidationResult } from '@/api/project'
 
 export const useProjectStore = defineStore('project', () => {
   const projectId = ref<string>('')
@@ -20,6 +20,13 @@ export const useProjectStore = defineStore('project', () => {
   const generating = ref(false)
   const yamlContent = ref<string>('')
   const sceneCount = ref<number>(0)
+
+  // Validation & repair
+  const validating = ref(false)
+  const repairing = ref(false)
+  const validationResult = ref<ValidationResult | null>(null)
+  const repairNotes = ref<string[]>([])
+  const repairSuccess = ref(false)
 
   function setProject(data: {
     project_id: string
@@ -76,6 +83,26 @@ export const useProjectStore = defineStore('project', () => {
     generating.value = val
   }
 
+  function setValidationResult(result: ValidationResult | null) {
+    validationResult.value = result
+  }
+
+  function setValidating(val: boolean) {
+    validating.value = val
+  }
+
+  function setRepairing(val: boolean) {
+    repairing.value = val
+  }
+
+  function setRepairNotes(notes: string[]) {
+    repairNotes.value = notes
+  }
+
+  function setRepairSuccess(val: boolean) {
+    repairSuccess.value = val
+  }
+
   function reset() {
     projectId.value = ''
     title.value = ''
@@ -90,6 +117,11 @@ export const useProjectStore = defineStore('project', () => {
     yamlContent.value = ''
     sceneCount.value = 0
     generating.value = false
+    validationResult.value = null
+    validating.value = false
+    repairing.value = false
+    repairNotes.value = []
+    repairSuccess.value = false
   }
 
   return {
@@ -116,6 +148,16 @@ export const useProjectStore = defineStore('project', () => {
     setYamlContent,
     setSceneCount,
     setGenerating,
+    validationResult,
+    validating,
+    repairing,
+    repairNotes,
+    repairSuccess,
+    setValidationResult,
+    setValidating,
+    setRepairing,
+    setRepairNotes,
+    setRepairSuccess,
     reset,
   }
 })

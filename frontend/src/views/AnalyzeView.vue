@@ -82,6 +82,37 @@
 
       <!-- Step 3 Results: YAML Viewer -->
       <YamlViewer :yaml-content="store.yamlContent" />
+
+      <!-- Step 4: Validate YAML -->
+      <div v-if="store.yamlContent" class="step-section">
+        <el-card>
+          <div class="step-area">
+            <div class="step-info">
+              <span class="step-label">Step 4: YAML 校验</span>
+              <span class="step-hint">
+                检查 YAML 语法、字段完整性、人物一致性
+              </span>
+            </div>
+            <el-button
+              type="info"
+              :loading="store.validating"
+              :disabled="store.validating"
+              @click="handleValidate"
+            >
+              {{ store.validating ? '正在校验...' : store.validationResult ? '✓ 已校验' : '校验 YAML' }}
+            </el-button>
+          </div>
+        </el-card>
+      </div>
+
+      <!-- Step 4 Results: Validation Panel -->
+      <ValidationPanel
+        :validation="store.validationResult"
+        :repairing="store.repairing"
+        :repair-notes="store.repairNotes"
+        :repair-success="store.repairSuccess"
+        @repair="handleRepair"
+      />
     </div>
   </div>
 </template>
@@ -94,8 +125,9 @@ import NovelInput from '@/components/NovelInput.vue'
 import ChapterList from '@/components/ChapterList.vue'
 import CharacterCards from '@/components/CharacterCards.vue'
 import YamlViewer from '@/components/YamlViewer.vue'
+import ValidationPanel from '@/components/ValidationPanel.vue'
 import { useProjectStore } from '@/stores/projectStore'
-import { extractStoryBible, generateScript } from '@/api/project'
+import { extractStoryBible, generateScript, validateYaml, repairYaml } from '@/api/project'
 
 const store = useProjectStore()
 const extractError = ref('')
@@ -104,6 +136,7 @@ const generateError = ref('')
 function onParseDone() {
   store.setStoryBible(null as any)
   store.setYamlContent('')
+  store.setValidationResult(null)
   extractError.value = ''
   generateError.value = ''
 }
@@ -156,6 +189,76 @@ async function handleGenerate() {
     }
   } finally {
     store.setGenerating(false)
+  }
+}
+
+async function handleValidate() {
+  if (!store.projectId || store.validating) return
+
+  store.setValidating(true)
+
+  try {
+    const result = await validateYaml(store.projectId)
+    store.setValidationResult(result.validation)
+    if (result.validation.valid) {
+      ElMessage.success('YAML 校验通过')
+    } else {
+      ElMessage.warning(
+        `校验发现 ${result.validation.errors.length} 个错误，` +
+        `${result.validation.warnings.length} 个警告`
+      )
+    }
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'response' in err) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } }
+      ElMessage.error(axiosErr.response?.data?.detail || '校验失败')
+    } else {
+      ElMessage.error('网络错误，请检查后端服务是否启动')
+    }
+  } finally {
+    store.setValidating(false)
+  }
+}
+
+async function handleRepair() {
+  if (!store.projectId || store.repairing) return
+
+  store.setRepairing(true)
+  store.setRepairNotes([])
+  store.setRepairSuccess(false)
+
+  try {
+    const result = await repairYaml(store.projectId)
+    store.setRepairNotes(result.repair_notes)
+    store.setRepairSuccess(result.valid)
+
+    if (result.repaired_yaml) {
+      store.setYamlContent(result.repaired_yaml)
+    }
+
+    if (result.valid) {
+      ElMessage.success('修复成功！YAML 已通过校验')
+      // Re-validate to update the validation panel
+      const validationResult = await validateYaml(store.projectId)
+      store.setValidationResult(validationResult.validation)
+    } else {
+      if (result.remaining_errors.length === 0) {
+        ElMessage.warning('部分修复完成，仍有警告')
+      } else {
+        ElMessage.warning(
+          `修复完成但仍有 ${result.remaining_errors.length} 个错误`
+        )
+      }
+    }
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'response' in err) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } }
+      ElMessage.error(axiosErr.response?.data?.detail || '修复失败')
+    } else {
+      ElMessage.error('网络错误，请检查后端服务是否启动')
+    }
+  } finally {
+    store.setRepairing(false)
   }
 }
 </script>

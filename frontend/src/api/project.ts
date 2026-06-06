@@ -116,3 +116,50 @@ export async function generateScript(
   )
   return response.data
 }
+
+// ── YAML 校验与修复相关 ──
+
+export interface ValidationError {
+  path: string
+  message: string
+}
+
+export interface ValidationResult {
+  valid: boolean
+  errors: ValidationError[]
+  warnings: ValidationError[]
+}
+
+export interface ValidateResponse {
+  project_id: string
+  validation: ValidationResult
+}
+
+export interface RepairResponse {
+  project_id: string
+  repaired_yaml: string
+  valid: boolean
+  repair_notes: string[]
+  remaining_errors: ValidationError[]
+  remaining_warnings: ValidationError[]
+}
+
+/** 校验 YAML */
+export async function validateYaml(
+  projectId: string
+): Promise<ValidateResponse> {
+  const response = await api.post<ValidateResponse>(
+    `/projects/${projectId}/validate`
+  )
+  return response.data
+}
+
+/** 自动修复 YAML */
+export async function repairYaml(
+  projectId: string
+): Promise<RepairResponse> {
+  const response = await extractApi.post<RepairResponse>(
+    `/projects/${projectId}/repair`
+  )
+  return response.data
+}

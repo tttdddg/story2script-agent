@@ -79,3 +79,34 @@ class GenerateScriptResponse(BaseModel):
     project_id: str = Field(..., description="项目 ID")
     yaml_content: str = Field(..., description="生成的 YAML 剧本文本")
     scene_count: int = Field(..., description="场景数量")
+
+
+# ── YAML 校验相关 ──
+
+class ValidationError(BaseModel):
+    """单个校验错误/警告"""
+    path: str = Field(..., description="出错字段路径，如 scenes[3].conflict")
+    message: str = Field(..., description="错误描述")
+
+
+class ValidationResult(BaseModel):
+    """校验结果"""
+    valid: bool = Field(..., description="是否通过校验")
+    errors: list[ValidationError] = Field(default_factory=list, description="错误列表")
+    warnings: list[ValidationError] = Field(default_factory=list, description="警告列表")
+
+
+class ValidateResponse(BaseModel):
+    """校验 API 响应"""
+    project_id: str = Field(..., description="项目 ID")
+    validation: ValidationResult = Field(..., description="校验结果")
+
+
+class RepairResponse(BaseModel):
+    """修复 API 响应"""
+    project_id: str = Field(..., description="项目 ID")
+    repaired_yaml: str = Field("", description="修复后的 YAML")
+    valid: bool = Field(False, description="修复后是否通过校验")
+    repair_notes: list[str] = Field(default_factory=list, description="修复记录")
+    remaining_errors: list[ValidationError] = Field(default_factory=list, description="剩余错误")
+    remaining_warnings: list[ValidationError] = Field(default_factory=list, description="剩余警告")
