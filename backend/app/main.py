@@ -1,3 +1,11 @@
+import sys
+from pathlib import Path
+
+# 兼容直接 python app/main.py 或 IDE 运行（路径修复必须在 imports 之前）
+_backend_dir = Path(__file__).resolve().parent.parent
+if str(_backend_dir) not in sys.path:
+    sys.path.insert(0, str(_backend_dir))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -33,3 +41,14 @@ async def health_check():
         "status": "ok",
         "message": "Story2Script Agent backend is running",
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+    )
