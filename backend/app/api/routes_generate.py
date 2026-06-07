@@ -6,8 +6,14 @@ from app.schemas.response_schema import (
     GenerateScriptResponse,
 )
 from app.services.data_store import load_project, update_project
+from app.services.llm_client import NoApiKeyError
 from app.services.script_generator import generate_script_yaml
 from app.services.story_extractor import extract_story_bible
+from app.services.demo_data import (
+    get_demo_story_bible,
+    get_demo_yaml_string,
+    get_demo_scene_count,
+)
 
 router = APIRouter(prefix="/api")
 
@@ -42,6 +48,9 @@ async def extract_project_story_bible(project_id: str):
 
     try:
         story_bible = extract_story_bible(chapters)
+    except NoApiKeyError:
+        # 无 API Key → 自动进入 Demo 模式
+        story_bible = get_demo_story_bible()
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
     except RuntimeError as e:
@@ -105,6 +114,10 @@ async def generate_project_script(project_id: str):
             indent=2,
         )
         scene_count = len(script_yaml.scenes)
+    except NoApiKeyError:
+        # 无 API Key → 自动进入 Demo 模式
+        yaml_content = get_demo_yaml_string()
+        scene_count = get_demo_scene_count()
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
     except RuntimeError as e:

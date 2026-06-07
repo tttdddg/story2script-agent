@@ -3,6 +3,9 @@ DeepSeek API 客户端
 
 封装 DeepSeek Chat API 调用，支持 JSON 模式输出和错误处理。
 DeepSeek API 兼容 OpenAI SDK 格式。
+
+当未配置 DEEPSEEK_API_KEY 时抛出 NoApiKeyError，
+调用方应捕获此异常并回退到 Demo 模式。
 """
 
 import json
@@ -12,7 +15,18 @@ from typing import Optional
 
 from openai import OpenAI
 
-from app.config import DEEPSEEK_API_KEY
+from app.config import DEEPSEEK_API_KEY, DEMO_MODE
+
+
+class NoApiKeyError(Exception):
+    """API Key 未配置异常 — 调用方应回退到 Demo 模式"""
+
+    def __init__(self):
+        super().__init__(
+            "DEEPSEEK_API_KEY 未配置。"
+            "请在 backend/.env 中设置 DEEPSEEK_API_KEY=your_key，"
+            "或使用 Demo 模式（当前已自动启用 Demo 模式）。"
+        )
 
 # DeepSeek API 配置
 DEEPSEEK_BASE_URL = "https://api.deepseek.com/chat/completions"
@@ -23,11 +37,15 @@ REQUEST_TIMEOUT = 90.0  # 秒
 
 
 def _api_key() -> str:
+    """获取 API Key，未配置时抛出 NoApiKeyError"""
     if not DEEPSEEK_API_KEY:
-        raise ValueError(
-            "DEEPSEEK_API_KEY 未配置。请在 backend/.env 中设置 DEEPSEEK_API_KEY=your_key"
-        )
+        raise NoApiKeyError()
     return DEEPSEEK_API_KEY
+
+
+def is_demo_mode() -> bool:
+    """判断当前是否为 Demo 模式（无 API Key）"""
+    return DEMO_MODE
 
 
 def chat_completion(

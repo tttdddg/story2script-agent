@@ -1,7 +1,6 @@
 import sys
 from pathlib import Path
 
-# 兼容直接 python app/main.py 或 IDE 运行（路径修复必须在 imports 之前）
 _backend_dir = Path(__file__).resolve().parent.parent
 if str(_backend_dir) not in sys.path:
     sys.path.insert(0, str(_backend_dir))
@@ -36,10 +35,13 @@ app.include_router(export_router)
 
 @app.get("/api/health")
 async def health_check():
-    """健康检查接口"""
+    from app.config import DEMO_MODE
+
     return {
         "status": "ok",
         "message": "Story2Script Agent backend is running",
+        "demo_mode": DEMO_MODE,
+        "api_key_configured": not DEMO_MODE,
     }
 
 

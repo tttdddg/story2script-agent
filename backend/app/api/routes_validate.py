@@ -6,8 +6,10 @@ from app.schemas.response_schema import (
     RepairResponse,
 )
 from app.services.data_store import load_project, update_project
+from app.services.llm_client import NoApiKeyError
 from app.services.yaml_validator import validate_yaml_content
-from app.services.yaml_repairer import repair_yaml, repair_and_validate
+from app.services.yaml_repairer import repair_and_validate
+from app.services.demo_data import get_demo_yaml_string
 
 router = APIRouter(prefix="/api")
 
@@ -83,6 +85,17 @@ async def repair_project_yaml(project_id: str):
 
     try:
         result = repair_and_validate(yaml_content)
+    except NoApiKeyError:
+        # 无 API Key → 回退到 Demo 数据并重新校验
+        demo_yaml = get_demo_yaml_string()
+        validation = validate_yaml_content(demo_yaml)
+        result = {
+            "repaired_yaml": demo_yaml,
+            "valid": validation.valid,
+            "repair_notes": ["Demo 模式：已使用预计算示例数据，无需 LLM 修复"],
+            "remaining_errors": [e.model_dump() for e in validation.errors],
+            "remaining_warnings": [w.model_dump() for w in validation.warnings],
+        }
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=f"大模型修复失败: {e}")
     except ValueError as e:

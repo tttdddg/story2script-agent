@@ -3,9 +3,9 @@
 面向小说作者、短剧编剧和内容创作团队的 AI 辅助剧本创作工具。
 支持将**3 个章节以上的小说文本**自动转换为**结构化YAML格式剧本初稿**，并提供Story Bible抽取、剧本预览、YAML Schema校验和文件导出能力。
 
-**视频网盘链接：https://pan.baidu.com/s/1tYoQYrG8UEovg2R9rCHWLA?pwd=vd5b**
+#### **视频网盘链接：**https://pan.baidu.com/s/1tYoQYrG8UEovg2R9rCHWLA?pwd=vd5b 
 
-本项目按照功能模块拆分PR，保证每个PR聚焦单一功能点，并在主分支保持可运行状态，具体实际PR记录请以GitHub Pull Request页面为准其中题目要求定义剧本的YAML Schema文档位于项目的docs/YAML_SCHEMA.md。
+本项目按照功能模块拆分PR，保证每个PR聚焦单一功能点，并在主分支保持可运行状态，具体实际PR记录请以GitHub Pull Request页面为准。
 
 **本项目仅用于七牛云 × XEngineer 暑期实训营作品展示与学习交流。**
 **如需进一步使用或改造，请遵守相关平台规则和知识产权要求。**
@@ -16,21 +16,21 @@
 
 | 内容             | 链接                                                         |
 | ---------------- | ------------------------------------------------------------ |
-| Demo 视频        |https://pan.baidu.com/s/1tYoQYrG8UEovg2R9rCHWLA?pwd=vd5b / 代码仓库里下载 |
+| Demo 视频        | [https://pan.baidu.com/s/1tYoQYrG8UEovg2R9rCHWLA?pwd=vd5b ](请填写你的 bilibili / 网盘 / 可访问视频链接) / 代码仓库里下载 |
 | 代码仓库         | [tttdddg/story2script-agent](https://github.com/tttdddg/story2script-agent) |
 | YAML Schema 文档 | [docs/YAML_SCHEMA.md](https://chatgpt.com/c/docs/YAML_SCHEMA.md) |
 | 示例小说文本     | [samples/sample_novel.txt](https://chatgpt.com/c/samples/sample_novel.txt) |
 | 示例 YAML 输出   | [samples/sample_output.yaml](https://chatgpt.com/c/samples/sample_output.yaml) |
 
-> 注意：Demo 视频链接已放置在 README 顶部显眼位置，便于评委快速查看作品效果。
+注意：Demo 视频链接已放置在 README 顶部显眼位置，便于评委快速查看作品效果。
 
 ------
 
 ## 2. 项目简介
 
-​        Story2Script Agent是一个AI小说剧本结构化改编系统，面向小说作者、短剧编剧和内容创作者，帮助用户将长篇小说章节快速转换为可编辑、可校验、可继续打磨的 YAML 格式剧本初稿。
+Story2Script Agent是一个AI小说剧本结构化改编系统，面向小说作者、短剧编剧和内容创作者，帮助用户将长篇小说章节快速转换为可编辑、可校验、可继续打磨的 YAML 格式剧本初稿。
 
-​       系统并不是简单地将小说文本交给大模型生成一段普通剧本文本，而是将小说改编过程拆解为多个结构化步骤：
+系统并不是简单地将小说文本交给大模型生成一段普通剧本文本，而是将小说改编过程拆解为多个结构化步骤：
 
 ```text
 小说输入
@@ -42,13 +42,13 @@
 → YAML 文件导出
 ```
 
-​        通过这种AI工作流设计，系统能够在生成剧本初稿的同时，尽量保证人物、场景、对白和来源章节之间的结构一致性，降低小说作者将作品改编为剧本的门槛。
+通过这种AI工作流设计，系统能够在生成剧本初稿的同时，尽量保证人物、场景、对白和来源章节之间的结构一致性，降低小说作者将作品改编为剧本的门槛。
 
 ------
 
 ## 3. 选题背景
 
-​        很多小说作者希望将自己的作品改编为短剧、广播剧、舞台剧或影视剧本，但在实际创作过程中通常会遇到以下问题：
+很多小说作者希望将自己的作品改编为短剧、广播剧、舞台剧或影视剧本，但在实际创作过程中通常会遇到以下问题：
 
 1. 小说文本较长，人工整理人物、地点、事件和场景成本较高。
 2. 小说叙事语言与剧本语言差异较大，需要重新拆分场景、动作和对白。
@@ -56,7 +56,7 @@
 4. 作者需要一个可编辑、可追溯、可进一步打磨的结构化剧本初稿，而不是一次性生成的散文式文本。
 5. 后续如果要接入剧本编辑器、短剧制作平台或自动化内容工作流，结构化 YAML 格式更方便扩展。
 
-​       因此，本项目围绕“小说文本 → 结构化剧本 YAML”的核心任务，设计了一套轻量级 AI 剧本改编工作流。
+因此，本项目围绕“小说文本 → 结构化剧本 YAML”的核心任务，设计了一套轻量级 AI 剧本改编工作流。
 
 ------
 
@@ -331,18 +331,34 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-创建环境变量文件：
+#### 🔑 API Key 配置（重要）
 
-```bash
-cp .env.example .env
-```
+本项目使用 DeepSeek API 提供 AI 能力。为了保护 API Key 安全：
 
-在 `.env` 中填写大模型 API Key：
+- **`.env` 已加入 `.gitignore`**，不会被提交到 Git 仓库
+- **`.env.example` 已提交**，评委可参考其格式自行配置
 
-```env
-DEEPSEEK_API_KEY=your_api_key_here
-DEEPSEEK_API_BASE_URL=https://api.deepseek.com
-```
+**方式一：配置真实 API Key（推荐）**
+
+1. 前往 [DeepSeek 开放平台](https://platform.deepseek.com/) 注册并获取 API Key
+2. 创建环境变量文件：
+   ```bash
+   cp .env.example .env
+   ```
+3. 编辑 `.env`，填入你的 API Key：
+   ```env
+   DEEPSEEK_API_KEY=sk-your_actual_api_key_here
+   ```
+4. 正常启动后端，系统将调用 DeepSeek API 处理你输入的小说文本
+
+**方式二：无 Key 自动 Demo 模式**
+
+如果评委没有 DeepSeek API Key，**无需任何额外配置**：
+- 系统会自动检测 API Key 是否配置
+- 未配置时自动进入 **Demo 模式**
+- Demo 模式使用基于示例小说（`samples/sample_novel.txt`）预计算的数据
+- 评委仍可完整体验：章节解析 → Story Bible → 剧本生成 → Schema 校验 → 导出的全流程
+- 健康检查接口会返回 `demo_mode: true`，方便前端展示 Demo 状态
 
 启动后端服务：
 
@@ -360,6 +376,17 @@ http://localhost:8000
 
 ```text
 GET http://localhost:8000/api/health
+```
+
+响应示例（含 API Key 状态）：
+
+```json
+{
+  "status": "ok",
+  "message": "Story2Script Agent backend is running",
+  "demo_mode": false,
+  "api_key_configured": true
+}
 ```
 
 ------
@@ -786,7 +813,7 @@ POST /api/validate
 
 4. 示例小说文本仅用于功能演示，不涉及第三方版权内容。
 
-5. 项目未提交真实 API Key，相关密钥通过环境变量配置。
+5. 项目未提交真实 API Key（`.env` 已加入 `.gitignore`，仅提交 `.env.example` 模板），相关密钥通过环境变量配置；未配置 Key 时系统自动进入 Demo 模式，使用预计算示例数据。
 
 6. 如复用了本人过往项目中的通用代码组织方式或工程经验，均已根据本项目需求重新实现，不涉及往期参赛作品核心业务代码复用。
 

@@ -6,10 +6,6 @@
 </script>
 
 <style>
-/* ═══════════════════════════════════════════════
-   Story2Script — Neumorphic Design System
-   ═══════════════════════════════════════════════ */
-
 :root {
   /* Background */
   --neu-bg: #e0e5ec;
