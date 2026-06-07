@@ -3,7 +3,7 @@
 面向小说作者、短剧编剧和内容创作团队的 AI 辅助剧本创作工具。
 支持将**3 个章节以上的小说文本**自动转换为**结构化YAML格式剧本初稿**，并提供Story Bible抽取、剧本预览、YAML Schema校验和文件导出能力。
 
-**视频网盘链接：**
+**视频网盘链接：https://pan.baidu.com/s/1tYoQYrG8UEovg2R9rCHWLA?pwd=vd5b**
 
 本项目按照功能模块拆分PR，保证每个PR聚焦单一功能点，并在主分支保持可运行状态，具体实际PR记录请以GitHub Pull Request页面为准。
 
@@ -16,7 +16,7 @@
 
 | 内容             | 链接                                                         |
 | ---------------- | ------------------------------------------------------------ |
-| Demo 视频        | [点击查看 Demo 视频](请填写你的 bilibili / 网盘 / 可访问视频链接) |
+| Demo 视频        |https://pan.baidu.com/s/1tYoQYrG8UEovg2R9rCHWLA?pwd=vd5b / 代码仓库里下载 |
 | 代码仓库         | [tttdddg/story2script-agent](https://github.com/tttdddg/story2script-agent) |
 | YAML Schema 文档 | [docs/YAML_SCHEMA.md](https://chatgpt.com/c/docs/YAML_SCHEMA.md) |
 | 示例小说文本     | [samples/sample_novel.txt](https://chatgpt.com/c/samples/sample_novel.txt) |
