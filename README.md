@@ -5,7 +5,7 @@
 
 #### 视频网盘链接：https://pan.baidu.com/s/1tYoQYrG8UEovg2R9rCHWLA?pwd=vd5b 
 
-本项目按照功能模块拆分PR，保证每个PR聚焦单一功能点，并在主分支保持可运行状态，具体实际PR记录请以GitHub Pull Request页面为准。
+本项目按照功能模块拆分PR，保证每个PR聚焦单一功能点，并在主分支保持可运行状态，具体实际PR记录请以GitHub Pull Request页面为准,其中要求额外定义剧本的YAML Schema文档位于项目的samples/sample_output.yaml。
 
 **本项目仅用于七牛云 × XEngineer 暑期实训营作品展示与学习交流。**
 **如需进一步使用或改造，请遵守相关平台规则和知识产权要求。**
