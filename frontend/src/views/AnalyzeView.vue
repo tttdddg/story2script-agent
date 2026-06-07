@@ -170,9 +170,12 @@
         <ValidationPanel
           :validation="store.validationResult"
           :repairing="store.repairing"
+          :revalidating="store.validating"
           :repair-notes="store.repairNotes"
           :repair-success="store.repairSuccess"
           @repair="handleRepair"
+          @revalidate="handleValidate"
+          @export="handleExport"
         />
 
         <!-- Step 5: Quality Report -->
