@@ -1,4 +1,4 @@
-# Story2Script Agent：AI 小说剧本结构化改编系统
+# Story2Script Agent：AI小说剧本结构化改编系统
 
 面向小说作者、短剧编剧和内容创作团队的 AI 辅助剧本创作工具。
 支持将**3 个章节以上的小说文本**自动转换为**结构化YAML格式剧本初稿**，并提供Story Bible抽取、剧本预览、YAML Schema校验和文件导出能力。
@@ -17,7 +17,7 @@
 | 内容             | 链接                                                         |
 | ---------------- | ------------------------------------------------------------ |
 | Demo 视频        | [点击查看 Demo 视频](请填写你的 bilibili / 网盘 / 可访问视频链接) |
-| 代码仓库         | [GitHub Repository](请填写你的 GitHub 仓库地址)              |
+| 代码仓库         | [tttdddg/story2script-agent](https://github.com/tttdddg/story2script-agent) |
 | YAML Schema 文档 | [docs/YAML_SCHEMA.md](https://chatgpt.com/c/docs/YAML_SCHEMA.md) |
 | 示例小说文本     | [samples/sample_novel.txt](https://chatgpt.com/c/samples/sample_novel.txt) |
 | 示例 YAML 输出   | [samples/sample_output.yaml](https://chatgpt.com/c/samples/sample_output.yaml) |

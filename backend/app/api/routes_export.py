@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from starlette.responses import StreamingResponse
-import io
+from fastapi.responses import Response
 
 from app.schemas.response_schema import ErrorResponse, ReportResponse
 from app.services.data_store import load_project
@@ -40,12 +39,15 @@ async def export_project_yaml(project_id: str):
 
     content_bytes, filename = export_yaml(yaml_content, title=title)
 
-    return StreamingResponse(
-        io.BytesIO(content_bytes),
-        media_type="application/x-yaml",
+    # URL-encode the filename for Content-Disposition to handle Chinese characters
+    from urllib.parse import quote
+    encoded_filename = quote(filename)
+
+    return Response(
+        content=content_bytes,
+        media_type="application/x-yaml; charset=utf-8",
         headers={
-            "Content-Disposition": f'attachment; filename="{filename}"',
-            "Content-Type": "application/x-yaml; charset=utf-8",
+            "Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}",
         },
     )
 

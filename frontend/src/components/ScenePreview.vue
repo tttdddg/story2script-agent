@@ -145,18 +145,18 @@ const parsedData = computed<ParsedScript | null>(() => {
 .scene-preview {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .script-info {
   text-align: center;
   padding: 8px 0;
 }
-
 .script-info h2 {
   font-size: 1.4rem;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0 0 8px;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
 .info-tags {
@@ -165,14 +165,22 @@ const parsedData = computed<ParsedScript | null>(() => {
   justify-content: center;
 }
 
-.logline-tag {
-  max-width: 400px;
-}
+.logline-tag { max-width: 400px; }
 
+/* Scene cards */
 .scenes-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+}
+
+.scene-card-wrap :deep(.el-card) {
+  border-radius: var(--neu-radius) !important;
+  box-shadow: var(--neu-shadow-out) !important;
+  transition: all 0.2s;
+}
+.scene-card-wrap :deep(.el-card):hover {
+  box-shadow: var(--neu-shadow-sm-out) !important;
 }
 
 .scene-header {
@@ -183,86 +191,81 @@ const parsedData = computed<ParsedScript | null>(() => {
 
 .scene-title {
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
+/* Meta */
 .scene-meta {
   margin-bottom: 12px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
 .meta-item {
   font-size: 0.85rem;
-  color: #606266;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
-
 .meta-label {
-  color: #909399;
+  color: var(--text-hint);
   font-weight: 500;
 }
-
 .conflict-text {
-  color: #e6a23c;
+  color: var(--accent-orange);
+  background: var(--accent-orange-light);
+  padding: 2px 8px;
+  border-radius: 6px;
 }
 
+/* Sections */
 .scene-section {
   margin-top: 10px;
   font-size: 0.85rem;
 }
-
 .section-label {
   font-weight: 600;
-  color: #409eff;
+  color: var(--accent-blue);
   display: block;
   margin-bottom: 6px;
 }
 
-.char-tag {
-  margin: 2px 4px 2px 0;
-}
+.char-tag { margin: 2px 4px 2px 0; }
 
-.action-list,
-.stage-list {
+/* Lists */
+.action-list, .stage-list {
   margin: 0;
   padding-left: 18px;
-  color: #606266;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
+/* Dialogues — neumorphic inset */
 .dialogue-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-
 .dialogue-item {
   padding: 8px 12px;
-  background: #f5f7fa;
-  border-radius: 6px;
-  border-left: 3px solid #409eff;
+  background: var(--neu-bg);
+  border-radius: var(--neu-radius-sm);
+  box-shadow: var(--neu-shadow-sm-in);
+  border-left: 3px solid var(--accent-blue);
 }
-
 .dialogue-speaker {
   font-weight: 600;
-  color: #409eff;
+  color: var(--accent-blue);
   margin-right: 6px;
 }
-
 .dialogue-emotion {
-  color: #909399;
+  color: var(--text-hint);
   font-size: 0.8rem;
   margin-right: 6px;
 }
-
 .dialogue-line {
-  color: #303133;
+  color: var(--text-primary);
   line-height: 1.5;
 }
 
-.parse-error {
-  padding: 20px 0;
-}
+.parse-error { padding: 20px 0; }
 </style>

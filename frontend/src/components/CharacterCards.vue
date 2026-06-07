@@ -1,89 +1,79 @@
 <template>
   <div class="story-bible" v-if="store.storyBible">
-    <!-- Characters -->
-    <el-card class="bible-section">
-      <template #header>
-        <div class="section-header">
-          <span>👤 人物列表</span>
-          <el-tag size="small" type="primary">
-            {{ store.storyBible.characters.length }} 人
-          </el-tag>
+    <!-- ═══ 人物卡片区：占满整行 ═══ -->
+    <section class="bible-section characters-section">
+      <div class="section-header">
+        <span>👤 人物列表</span>
+        <el-tag size="small" type="primary">{{ store.storyBible.characters.length }} 人</el-tag>
+      </div>
+      <div class="char-grid">
+        <div v-for="char in store.storyBible.characters" :key="char.id" class="char-card">
+          <div class="char-head">
+            <span class="char-name">{{ char.name }}</span>
+            <el-tag :type="roleType(char.role)" size="small" effect="dark">
+              {{ roleLabel(char.role) }}
+            </el-tag>
+          </div>
+          <div v-if="char.aliases.length" class="char-aliases">
+            别名：{{ char.aliases.join('、') }}
+          </div>
+          <div v-if="char.personality" class="char-detail">
+            <span class="label">性格：</span>{{ char.personality }}
+          </div>
+          <div v-if="char.motivation" class="char-detail">
+            <span class="label">动机：</span>{{ char.motivation }}
+          </div>
         </div>
-      </template>
-      <el-row :gutter="16">
-        <el-col
-          v-for="char in store.storyBible.characters"
-          :key="char.id"
-          :xs="24"
-          :sm="12"
-          :md="8"
-        >
-          <el-card class="character-card" shadow="hover">
-            <div class="char-header">
-              <span class="char-name">{{ char.name }}</span>
-              <el-tag
-                :type="roleType(char.role)"
-                size="small"
-                effect="dark"
-              >
-                {{ roleLabel(char.role) }}
-              </el-tag>
-            </div>
-            <div v-if="char.aliases.length" class="char-aliases">
-              别名：{{ char.aliases.join('、') }}
-            </div>
-            <div v-if="char.personality" class="char-detail">
-              <span class="label">性格：</span>{{ char.personality }}
-            </div>
-            <div v-if="char.motivation" class="char-detail">
-              <span class="label">动机：</span>{{ char.motivation }}
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </el-card>
+      </div>
+    </section>
 
-    <!-- Locations & Events row -->
-    <el-row :gutter="16" class="bible-row">
-      <!-- Locations -->
-      <el-col :xs="24" :md="12">
-        <el-card class="bible-section">
-          <template #header>
-            <div class="section-header">
-              <span>📍 地点列表</span>
-              <el-tag size="small" type="success">
-                {{ store.storyBible.locations.length }} 处
-              </el-tag>
-            </div>
-          </template>
-          <el-tag
-            v-for="loc in store.storyBible.locations"
-            :key="loc"
-            class="location-tag"
-            size="large"
-          >
-            {{ loc }}
-          </el-tag>
+    <!-- ═══ 下方：左右分区 ═══ -->
+    <div class="bible-grid">
+      <!-- 左侧：地点 + 人物关系 -->
+      <aside class="bible-left">
+        <!-- 地点列表 -->
+        <section class="bible-section">
+          <div class="section-header">
+            <span>📍 地点列表</span>
+            <el-tag size="small" type="success">{{ store.storyBible.locations.length }} 处</el-tag>
+          </div>
+          <div class="location-tags">
+            <el-tag v-for="loc in store.storyBible.locations" :key="loc" class="loc-tag" size="large">
+              {{ loc }}
+            </el-tag>
+          </div>
           <el-empty
             v-if="!store.storyBible.locations.length"
             description="暂无地点数据"
             :image-size="40"
           />
-        </el-card>
-      </el-col>
+        </section>
 
-      <!-- Key Events -->
-      <el-col :xs="24" :md="12">
-        <el-card class="bible-section">
-          <template #header>
-            <div class="section-header">
-              <span>⚡ 关键事件</span>
-              <el-tag size="small" type="warning">
-                {{ store.storyBible.key_events.length }} 件
-              </el-tag>
+        <!-- 人物关系 -->
+        <section class="bible-section" v-if="store.storyBible.relationships.length">
+          <div class="section-header">
+            <span>🔗 人物关系</span>
+            <el-tag size="small" type="info">{{ store.storyBible.relationships.length }} 组</el-tag>
+          </div>
+          <div class="relation-list">
+            <div v-for="rel in store.storyBible.relationships" :key="`${rel.from_char}-${rel.to}`" class="rel-item">
+              <span class="rel-from">{{ rel.from_char }}</span>
+              <span class="rel-arrow">→</span>
+              <span class="rel-to">{{ rel.to }}</span>
+              <span class="rel-desc">{{ rel.relation }}</span>
             </div>
-          </template>
-          <el-timeline v-if="store.storyBible.key_events.length">
+          </div>
+        </section>
+      </aside>
+
+      <!-- 右侧：关键事件时间线 -->
+      <section class="bible-section bible-right">
+        <div class="section-header">
+          <span>⚡ 关键事件</span>
+          <el-tag size="small" type="warning">{{ store.storyBible.key_events.length }} 件</el-tag>
+        </div>
+        <div class="events-scroll" v-if="store.storyBible.key_events.length">
+          <el-timeline>
             <el-timeline-item
               v-for="evt in store.storyBible.key_events"
               :key="evt.event_id"
@@ -96,36 +86,10 @@
               </p>
             </el-timeline-item>
           </el-timeline>
-          <el-empty
-            v-else
-            description="暂无事件数据"
-            :image-size="40"
-          />
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- Relationships -->
-    <el-card class="bible-section" v-if="store.storyBible.relationships.length">
-      <template #header>
-        <div class="section-header">
-          <span>🔗 人物关系</span>
-          <el-tag size="small" type="info">
-            {{ store.storyBible.relationships.length }} 组
-          </el-tag>
         </div>
-      </template>
-      <div class="relation-list">
-        <el-tag
-          v-for="rel in store.storyBible.relationships"
-          :key="`${rel.from_char}-${rel.to}`"
-          class="relation-tag"
-          size="large"
-        >
-          {{ rel.from_char }} → {{ rel.to }}：{{ rel.relation }}
-        </el-tag>
-      </div>
-    </el-card>
+        <el-empty v-else description="暂无事件数据" :image-size="40" />
+      </section>
+    </div>
   </div>
 </template>
 
@@ -157,84 +121,162 @@ function roleLabel(role: string): string {
 
 <style scoped>
 .story-bible {
-  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── 通用 section ── */
+.bible-section {
+  background: var(--neu-bg-light);
+  border-radius: var(--neu-radius);
+  box-shadow: var(--neu-shadow-out);
+  padding: 16px 20px;
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+/* ── 人物卡片网格 ── */
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.char-card {
+  background: var(--neu-bg);
+  border-radius: var(--neu-radius-sm);
+  box-shadow: var(--neu-shadow-sm-out);
+  padding: 14px 16px;
+  transition: all 0.2s;
+}
+.char-card:hover {
+  box-shadow: var(--neu-shadow-sm-in);
+}
+
+.char-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.char-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.char-aliases {
+  color: var(--text-hint);
+  font-size: 0.83rem;
+  margin-bottom: 6px;
+}
+.char-detail {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+  line-height: 1.5;
+}
+.char-detail .label {
+  color: var(--text-hint);
+}
+
+/* ── 下方网格：36% / 64% ── */
+.bible-grid {
+  display: grid;
+  grid-template-columns: 36% 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ── 左侧 ── */
+.bible-left {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.bible-section {
-  width: 100%;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.character-card {
-  margin-bottom: 12px;
-  height: 100%;
-}
-
-.char-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.char-name {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #303133;
-}
-
-.char-aliases {
-  color: #909399;
-  font-size: 0.85rem;
-  margin-bottom: 8px;
-}
-
-.char-detail {
-  font-size: 0.85rem;
-  color: #606266;
-  margin-bottom: 4px;
-  line-height: 1.5;
-}
-
-.char-detail .label {
-  color: #909399;
-}
-
-.bible-row {
-  margin-bottom: 0;
-}
-
-.location-tag {
-  margin: 4px 8px 4px 0;
-}
-
-.event-desc {
-  color: #303133;
-  margin: 0 0 4px;
-  line-height: 1.5;
-}
-
-.event-chars {
-  color: #909399;
-  font-size: 0.8rem;
-  margin: 0;
-}
-
-.relation-list {
+/* 地点标签 */
+.location-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
+.loc-tag {
+  margin: 0;
+}
 
-.relation-tag {
-  max-width: 100%;
+/* 人物关系 */
+.relation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rel-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--neu-bg);
+  border-radius: var(--neu-radius-sm);
+  box-shadow: var(--neu-shadow-sm-in);
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+.rel-from, .rel-to {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.rel-arrow {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+.rel-desc {
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+/* ── 右侧：关键事件时间线 ── */
+.bible-right {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.events-scroll {
+  max-height: 440px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.event-desc {
+  color: var(--text-primary);
+  margin: 0 0 4px;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+.event-chars {
+  color: var(--text-hint);
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 768px) {
+  .bible-grid {
+    grid-template-columns: 1fr;
+  }
+  .char-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+  .events-scroll {
+    max-height: 340px;
+  }
 }
 </style>
